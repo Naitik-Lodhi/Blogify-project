@@ -5,7 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 // Importing BrowserRouter from react-router-dom to enable client-side routing
-import { BrowserRouter, HashRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 
 // Importing the main App component that contains the core UI and routing logic
 import App from "./App";
@@ -23,27 +23,18 @@ import { FavoriteProvider } from "./context/FavoriteContext";
 
 // Create a root rendering context and render the React component tree into the HTML element with id="root"
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  // React.StrictMode is a development tool that helps highlight potential issues in an application
   <React.StrictMode>
     <FeedbackProvider>
       <BlogProvider>
-        {/* AuthProvider wraps the app to provide authentication context globally */}
         <AuthProvider>
           <CreateBlogProvider>
-            {/* ThemeContextProvider wraps below components to allow theme management */}
             <ThemeContextProvider>
-              {/* ViewModeProvider allows switching between different layout views across the app */}
               <ViewModeProvider>
-                {/* BrowserRouter enables routing using the HTML5 history API */}
                 <BrowserRouter>
-                  {/* SearchProvider makes search state accessible to components within the app */}
                   <SearchProvider>
-                    {/* App is the root component that defines the UI and routing */}
                     <BlogFilterProvider>
                       <FavoriteProvider>
-                        <HashRouter>
-                          <App />
-                        </HashRouter>
+                        <App />
                       </FavoriteProvider>
                     </BlogFilterProvider>
                   </SearchProvider>
