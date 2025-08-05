@@ -12,7 +12,13 @@ const Signup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const err = signup(form);
+
+    // ✅ Add `role: "user"` to satisfy the expected User type
+    const err = signup({
+      ...form,
+      role: "user",
+    });
+
     if (err) return setError(err);
 
     const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
