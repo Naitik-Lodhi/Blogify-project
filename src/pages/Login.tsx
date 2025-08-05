@@ -205,7 +205,7 @@ const Login = () => {
             </Typography>
           )}
 
-          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3,color: "#2575fc"  }}>
+          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3,backgroundcolor: "#2575fc" }}>
             Login
           </Button>
 

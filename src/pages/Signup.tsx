@@ -233,7 +233,7 @@ const Signup = () => {
             fullWidth
             variant="contained"
             type="submit"
-            sx={{ mt: 3, color: "#2575fc" }}
+            sx={{ mt: 3, backgroundcolor: "#2575fc" }}
           >
             Create Account
           </Button>
