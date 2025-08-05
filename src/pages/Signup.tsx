@@ -1,23 +1,83 @@
 import { useState } from "react";
-import { Box, Button, TextField, Typography, Paper } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  InputAdornment,
+  IconButton,
+  LinearProgress,
+} from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { signup } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const { login: loginWithContext } = useAuth();
+
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
-  const { login: loginWithContext } = useAuth();
+  const [formErrors, setFormErrors] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong">("Weak");
+
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const getPasswordStrength = (password: string): "Weak" | "Medium" | "Strong" => {
+    const lengthCheck = password.length >= 6;
+    const uppercaseCheck = /[A-Z]/.test(password);
+    const numberCheck = /[0-9]/.test(password);
+    const specialCharCheck = /[!@#$%^&*]/.test(password);
+
+    const score = [lengthCheck, uppercaseCheck, numberCheck, specialCharCheck].filter(Boolean)
+      .length;
+
+    if (score <= 1) return "Weak";
+    if (score === 2 || score === 3) return "Medium";
+    return "Strong";
+  };
+
+  const validatePassword = (password: string) => {
+    const lengthCheck = password.length >= 6;
+    const uppercaseCheck = /[A-Z]/.test(password);
+    const numberCheck = /[0-9]/.test(password);
+    const specialCharCheck = /[!@#$%^&*]/.test(password);
+
+    return lengthCheck && uppercaseCheck && numberCheck && specialCharCheck;
+  };
+
+  const handleInputChange = (field: "name" | "email" | "password", value: string) => {
+    setForm({ ...form, [field]: value });
+
+    if (field === "email") {
+      setFormErrors((prev) => ({
+        ...prev,
+        email: validateEmail(value) ? "" : "Invalid email format",
+      }));
+    }
+
+    if (field === "password") {
+      setFormErrors((prev) => ({
+        ...prev,
+        password: validatePassword(value)
+          ? ""
+          : "Password must be at least 6 chars, include uppercase, number, special char.",
+      }));
+      setPasswordStrength(getPasswordStrength(value));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // ✅ Add `role: "user"` to satisfy the expected User type
-    const err = signup({
-      ...form,
-      role: "user",
-    });
+    // Final validation before submit
+    if (formErrors.email || formErrors.password) return;
+
+    const err = signup({ ...form, role: "user" });
 
     if (err) return setError(err);
 
@@ -25,6 +85,28 @@ const Signup = () => {
     const newUser = allUsers.find((u: any) => u.email === form.email);
     loginWithContext(newUser);
     navigate("/");
+  };
+
+  const getStrengthColor = () => {
+    switch (passwordStrength) {
+      case "Weak":
+        return "error";
+      case "Medium":
+        return "warning";
+      case "Strong":
+        return "success";
+    }
+  };
+
+  const getStrengthValue = () => {
+    switch (passwordStrength) {
+      case "Weak":
+        return 30;
+      case "Medium":
+        return 60;
+      case "Strong":
+        return 100;
+    }
   };
 
   return (
@@ -45,8 +127,7 @@ const Signup = () => {
           p: 4,
           borderRadius: 3,
           backgroundColor: "rgba(255,255,255,0.95)",
-          boxShadow:
-            "0 8px 32px 0 rgba(31, 38, 135, 0.37), 0 0 15px rgba(31, 38, 135, 0.4)",
+          boxShadow: "0 8px 32px rgba(31,38,135,0.37)",
           textAlign: "center",
         }}
       >
@@ -63,146 +144,73 @@ const Signup = () => {
             margin="normal"
             label="Name"
             value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            onChange={(e) => handleInputChange("name", e.target.value)}
             required
-            InputLabelProps={{
-              shrink: true,
-              sx: { fontSize: "1rem" },
-            }}
-            sx={{
-              "& .MuiInputLabel-root": { color: "#2575fc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                color: "#000",
-                "& fieldset": {
-                  borderColor: "#2575fc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#6a11cb",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#6a11cb",
-                },
-              },
-              input: {
-                color: "#000",
-                py: 1,
-              },
-            }}
           />
           <TextField
             fullWidth
             margin="normal"
             label="Email"
             value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            onChange={(e) => handleInputChange("email", e.target.value)}
+            error={!!formErrors.email}
+            helperText={formErrors.email}
             required
-            InputLabelProps={{
-              shrink: true,
-              sx: { fontSize: "1rem" },
-            }}
-            sx={{
-              "& .MuiInputLabel-root": { color: "#2575fc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                color: "#000",
-                "& fieldset": {
-                  borderColor: "#2575fc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#6a11cb",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#6a11cb",
-                },
-              },
-              input: {
-                color: "#000",
-                py: 1,
-              },
-            }}
           />
           <TextField
             fullWidth
             margin="normal"
             label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(e) => handleInputChange("password", e.target.value)}
+            error={!!formErrors.password}
+            helperText={formErrors.password}
             required
-            InputLabelProps={{
-              shrink: true,
-              sx: { fontSize: "1rem" },
-            }}
-            sx={{
-              "& .MuiInputLabel-root": { color: "#2575fc" },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                color: "#000",
-                "& fieldset": {
-                  borderColor: "#2575fc",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#6a11cb",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#6a11cb",
-                },
-              },
-              input: {
-                color: "#000",
-                py: 1,
-              },
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword((s) => !s)}>
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
             }}
           />
+
+          {form.password && (
+            <>
+              <Typography
+                variant="caption"
+                sx={{ display: "block", textAlign: "left", mt: 1 }}
+                color={getStrengthColor()}
+              >
+                Strength: {passwordStrength}
+              </Typography>
+              <LinearProgress
+                variant="determinate"
+                value={getStrengthValue()}
+                color={getStrengthColor()}
+                sx={{ height: 8, borderRadius: 2, mt: 0.5, mb: 2 }}
+              />
+            </>
+          )}
+
           {error && (
             <Typography color="error" sx={{ mt: 1, mb: 1 }}>
               {error}
             </Typography>
           )}
-          <Button
-            fullWidth
-            variant="contained"
-            type="submit"
-            sx={{
-              mt: 3,
-              py: 1.5,
-              background: "linear-gradient(90deg, #6a11cb 0%, #2575fc 100%)",
-              fontWeight: "bold",
-              fontSize: "1rem",
-              borderRadius: 2,
-              transition: "all 0.3s ease",
-              "&:hover": {
-                background: "linear-gradient(90deg, #2575fc 0%, #6a11cb 100%)",
-                boxShadow: "0 4px 15px rgba(101, 41, 255, 0.6)",
-              },
-            }}
-          >
+
+          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
             Create Account
           </Button>
-          <Button
-            fullWidth
-            onClick={() => navigate("/login")}
-            sx={{
-              mt: 2,
-              color: "#2575fc",
-              fontWeight: "bold",
-              textTransform: "none",
-              "&:hover": { textDecoration: "underline" },
-            }}
-          >
+
+          <Button fullWidth onClick={() => navigate("/login")} sx={{ mt: 2 }}>
             Already have an account? Log in
           </Button>
-          <Button
-            onClick={() => navigate("/")}
-            sx={{
-              mt: 1,
-              color: "#666",
-              textTransform: "none",
-              fontSize: "0.9rem",
-              "&:hover": { textDecoration: "underline", color: "#2575fc" },
-            }}
-          >
+
+          <Button onClick={() => navigate("/")} sx={{ mt: 1 }}>
             ← Back to Home
           </Button>
         </form>
