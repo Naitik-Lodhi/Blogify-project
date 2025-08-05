@@ -1,0 +1,22 @@
+[
+  {
+    "id": "1",
+    "title": "Dummy Blog 1",
+    "content": "This is dummy content.",
+    "category": "Tech",
+    "authorId": "dummy-user-1",
+    "date": "2025-08-01T10:00:00Z",
+    "image": "",
+    "isFavorite": false
+  },
+  {
+    "id": "2",
+    "title": "Dummy Blog 2",
+    "content": "Another blog post.",
+    "category": "Lifestyle",
+    "authorId": "dummy-user-2",
+    "date": "2025-08-01T12:00:00Z",
+    "image": "",
+    "isFavorite": true
+  }
+]

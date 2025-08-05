@@ -22,17 +22,21 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("blogs") || "[]");
+    const stored = localStorage.getItem("blogs");
 
-    if (stored.length === 0) {
-      fetch("../data/dummyBlogs.json")
+    if (!stored || stored === "[]") {
+      fetch("/dummyBlogs.json")
         .then((res) => res.json())
         .then((data) => {
+          console.log("Loaded dummy data:", data);
           localStorage.setItem("blogs", JSON.stringify(data));
           setBlogs(data);
+        })
+        .catch((err) => {
+          console.error("Failed to load dummy data:", err);
         });
     } else {
-      setBlogs(stored);
+      setBlogs(JSON.parse(stored));
     }
   }, []);
 
