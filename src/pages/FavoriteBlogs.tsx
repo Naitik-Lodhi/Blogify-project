@@ -13,13 +13,11 @@ const FavoriteBlogs = () => {
   const { view } = useViewContext();
   const [visibleCount, setVisibleCount] = useState(BLOGS_PER_PAGE);
   const { blogs } = useBlogContext();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
   const { favoriteIds } = useFavorites();
 
-   const favBlogs = blogs.filter(
-    (b) => b.isFavorite && b.authorId !== user?.id
-  );
+  const favBlogs = blogs.filter((b) => b.isFavorite && !!user);
 
   const hasMore = visibleCount < favBlogs.length;
 

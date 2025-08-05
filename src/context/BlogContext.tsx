@@ -22,7 +22,18 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    refreshBlogs();
+    const stored = JSON.parse(localStorage.getItem("blogs") || "[]");
+
+    if (stored.length === 0) {
+      fetch("../data/dummyBlogs.json")
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem("blogs", JSON.stringify(data));
+          setBlogs(data);
+        });
+    } else {
+      setBlogs(stored);
+    }
   }, []);
 
   const addBlog = (blog: Blog) => {
@@ -53,7 +64,14 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <BlogContext.Provider
-      value={{ blogs, refreshBlogs, addBlog, updateBlog, deleteBlog, toggleFavorite }}
+      value={{
+        blogs,
+        refreshBlogs,
+        addBlog,
+        updateBlog,
+        deleteBlog,
+        toggleFavorite,
+      }}
     >
       {children}
     </BlogContext.Provider>
@@ -62,7 +80,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useBlogContext = () => {
   const context = useContext(BlogContext);
-  if (!context) throw new Error("useBlogContext must be used within BlogProvider");
+  if (!context)
+    throw new Error("useBlogContext must be used within BlogProvider");
   return context;
 };
-
