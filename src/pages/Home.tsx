@@ -23,9 +23,10 @@ const Home = () => {
   const [visibleCount, setVisibleCount] = useState(BLOGS_PER_PAGE);
   const { openModal, setOpenModal, editingBlog, setEditingBlog } =
     useCreateBlog();
-  const { blogs, addBlog, updateBlog } = useBlogContext();
+  const { blogs, addBlog, updateBlog, refreshBlogs } = useBlogContext();
 
   useEffect(() => {
+    refreshBlogs();
     setVisibleCount(BLOGS_PER_PAGE);
     // eslint-disable-next-line
   }, [query, filter]);
@@ -40,6 +41,7 @@ const Home = () => {
     }
     setOpenModal(false);
     setEditingBlog(undefined);
+    refreshBlogs();
   };
 
   const filteredBlogs = blogs

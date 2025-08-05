@@ -1,80 +1,59 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Blog } from "../types/blog";
-import dummyData from "../data/dummyBlogs.json"; // ✅ Your dummy JSON
-import { useAuth } from "./AuthContext";
 
 interface BlogContextType {
   blogs: Blog[];
+  refreshBlogs: () => void;
   addBlog: (blog: Blog) => void;
   updateBlog: (blog: Blog) => void;
+  deleteBlog: (id: string) => void;
   toggleFavorite: (id: string) => void;
 }
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
 
 export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
-  useAuth();
   const [blogs, setBlogs] = useState<Blog[]>([]);
 
-  // ✅ Load from localStorage or dummy on first load
+  // Load blogs from localStorage
+  const refreshBlogs = () => {
+    const stored = JSON.parse(localStorage.getItem("blogs") || "[]");
+    setBlogs(stored);
+  };
+
   useEffect(() => {
-    const stored = localStorage.getItem("blogs");
-    if (stored) {
-      const parsed: Blog[] = JSON.parse(stored).map(
-        (b: { isFavorite: any }) => ({
-          ...b,
-          isFavorite: b.isFavorite ?? false, // ensure field exists
-        })
-      );
-      setBlogs(parsed);
-    } else {
-      const initialBlogs = dummyData.map((b) => ({
-        ...b,
-        isFavorite: b.isFavorite ?? false,
-      }));
-      setBlogs(initialBlogs);
-      localStorage.setItem("blogs", JSON.stringify(initialBlogs));
-    }
+    refreshBlogs();
   }, []);
 
-  const saveBlogs = (updated: Blog[]) => {
+  const addBlog = (blog: Blog) => {
+    const updated = [blog, ...blogs];
     setBlogs(updated);
     localStorage.setItem("blogs", JSON.stringify(updated));
   };
 
-  const addBlog = (blog: Blog) => {
-    const blogWithDefaults = {
-      ...blog,
-      isFavorite: blog.isFavorite ?? false,
-    };
-    const updated = [blogWithDefaults, ...blogs];
-    saveBlogs(updated);
+  const updateBlog = (blog: Blog) => {
+    const updated = blogs.map((b) => (b.id === blog.id ? blog : b));
+    setBlogs(updated);
+    localStorage.setItem("blogs", JSON.stringify(updated));
   };
 
-  const updateBlog = (blog: Blog) => {
-    const updatedBlog = {
-      ...blog,
-      isFavorite: blog.isFavorite ?? false,
-    };
-    const updated = blogs.map((b) => (b.id === blog.id ? updatedBlog : b));
-    saveBlogs(updated);
+  const deleteBlog = (id: string) => {
+    const updated = blogs.filter((b) => b.id !== id);
+    setBlogs(updated);
+    localStorage.setItem("blogs", JSON.stringify(updated));
   };
 
   const toggleFavorite = (id: string) => {
     const updated = blogs.map((b) =>
       b.id === id ? { ...b, isFavorite: !b.isFavorite } : b
     );
-    saveBlogs(updated);
+    setBlogs(updated);
+    localStorage.setItem("blogs", JSON.stringify(updated));
   };
 
   return (
     <BlogContext.Provider
-      value={{
-        blogs,
-        addBlog,
-        updateBlog,
-        toggleFavorite,
-      }}
+      value={{ blogs, refreshBlogs, addBlog, updateBlog, deleteBlog, toggleFavorite }}
     >
       {children}
     </BlogContext.Provider>
@@ -83,6 +62,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useBlogContext = () => {
   const context = useContext(BlogContext);
-  if (!context) throw new Error("useBlogContext must be used within provider");
+  if (!context) throw new Error("useBlogContext must be used within BlogProvider");
   return context;
 };
+
