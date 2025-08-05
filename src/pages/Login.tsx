@@ -31,9 +31,7 @@ const Login = () => {
     const uppercaseCheck = /[A-Z]/.test(password);
     const numberCheck = /[0-9]/.test(password);
     const specialCharCheck = /[!@#$%^&*]/.test(password);
-
     const score = [lengthCheck, uppercaseCheck, numberCheck, specialCharCheck].filter(Boolean).length;
-
     if (score <= 1) return "Weak";
     if (score === 2 || score === 3) return "Medium";
     return "Strong";
@@ -70,8 +68,6 @@ const Login = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Stop if any validation error
     if (formErrors.email || formErrors.password) return;
 
     const user = JSON.parse(localStorage.getItem("users") || "[]").find(
@@ -85,6 +81,27 @@ const Login = () => {
 
     loginWithContext(user);
     navigate("/");
+  };
+
+  const commonFieldStyles = {
+    "& .MuiInputLabel-root": { color: "#2575fc" },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 2,
+      color: "#000",
+      "& fieldset": {
+        borderColor: "#2575fc",
+      },
+      "&:hover fieldset": {
+        borderColor: "#6a11cb",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#6a11cb",
+      },
+    },
+    input: {
+      color: "#000",
+      py: 1,
+    },
   };
 
   const getStrengthColor = () => {
@@ -131,11 +148,7 @@ const Login = () => {
           textAlign: "center",
         }}
       >
-        <Typography
-          variant="h4"
-          mb={3}
-          sx={{ fontWeight: "bold", color: "#2575fc", letterSpacing: 1 }}
-        >
+        <Typography variant="h4" mb={3} sx={{ fontWeight: "bold", color: "#2575fc" }}>
           Welcome Back
         </Typography>
         <form onSubmit={handleSubmit}>
@@ -148,6 +161,7 @@ const Login = () => {
             error={!!formErrors.email}
             helperText={formErrors.email}
             required
+            sx={commonFieldStyles}
           />
           <TextField
             fullWidth
@@ -159,6 +173,7 @@ const Login = () => {
             error={!!formErrors.password}
             helperText={formErrors.password}
             required
+            sx={commonFieldStyles}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -172,11 +187,7 @@ const Login = () => {
 
           {form.password && (
             <>
-              <Typography
-                variant="caption"
-                sx={{ display: "block", textAlign: "left", mt: 1 }}
-                color={getStrengthColor()}
-              >
+              <Typography variant="caption" sx={{ display: "block", textAlign: "left", mt: 1 }} color={getStrengthColor()}>
                 Strength: {passwordStrength}
               </Typography>
               <LinearProgress
@@ -189,10 +200,7 @@ const Login = () => {
           )}
 
           {error && (
-            <Typography
-              color="error"
-              sx={{ mt: 1, mb: 1, fontWeight: "medium" }}
-            >
+            <Typography color="error" sx={{ mt: 1, mb: 1 }}>
               {error}
             </Typography>
           )}

@@ -22,20 +22,26 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [formErrors, setFormErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong">("Weak");
+  const [passwordStrength, setPasswordStrength] = useState<
+    "Weak" | "Medium" | "Strong"
+  >("Weak");
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const getPasswordStrength = (password: string): "Weak" | "Medium" | "Strong" => {
+  const getPasswordStrength = (
+    password: string
+  ): "Weak" | "Medium" | "Strong" => {
     const lengthCheck = password.length >= 6;
     const uppercaseCheck = /[A-Z]/.test(password);
     const numberCheck = /[0-9]/.test(password);
     const specialCharCheck = /[!@#$%^&*]/.test(password);
-
-    const score = [lengthCheck, uppercaseCheck, numberCheck, specialCharCheck].filter(Boolean)
-      .length;
-
+    const score = [
+      lengthCheck,
+      uppercaseCheck,
+      numberCheck,
+      specialCharCheck,
+    ].filter(Boolean).length;
     if (score <= 1) return "Weak";
     if (score === 2 || score === 3) return "Medium";
     return "Strong";
@@ -46,20 +52,20 @@ const Signup = () => {
     const uppercaseCheck = /[A-Z]/.test(password);
     const numberCheck = /[0-9]/.test(password);
     const specialCharCheck = /[!@#$%^&*]/.test(password);
-
     return lengthCheck && uppercaseCheck && numberCheck && specialCharCheck;
   };
 
-  const handleInputChange = (field: "name" | "email" | "password", value: string) => {
+  const handleInputChange = (
+    field: "name" | "email" | "password",
+    value: string
+  ) => {
     setForm({ ...form, [field]: value });
-
     if (field === "email") {
       setFormErrors((prev) => ({
         ...prev,
         email: validateEmail(value) ? "" : "Invalid email format",
       }));
     }
-
     if (field === "password") {
       setFormErrors((prev) => ({
         ...prev,
@@ -73,18 +79,36 @@ const Signup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Final validation before submit
     if (formErrors.email || formErrors.password) return;
 
     const err = signup({ ...form, role: "user" });
-
     if (err) return setError(err);
 
     const allUsers = JSON.parse(localStorage.getItem("users") || "[]");
     const newUser = allUsers.find((u: any) => u.email === form.email);
     loginWithContext(newUser);
     navigate("/");
+  };
+
+  const commonFieldStyles = {
+    "& .MuiInputLabel-root": { color: "#2575fc" },
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 2,
+      color: "#000",
+      "& fieldset": {
+        borderColor: "#2575fc",
+      },
+      "&:hover fieldset": {
+        borderColor: "#6a11cb",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#6a11cb",
+      },
+    },
+    input: {
+      color: "#000",
+      py: 1,
+    },
   };
 
   const getStrengthColor = () => {
@@ -134,7 +158,7 @@ const Signup = () => {
         <Typography
           variant="h4"
           mb={3}
-          sx={{ fontWeight: "bold", color: "#2575fc", letterSpacing: 1 }}
+          sx={{ fontWeight: "bold", color: "#2575fc" }}
         >
           Create Account
         </Typography>
@@ -146,6 +170,7 @@ const Signup = () => {
             value={form.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
             required
+            sx={commonFieldStyles}
           />
           <TextField
             fullWidth
@@ -156,6 +181,7 @@ const Signup = () => {
             error={!!formErrors.email}
             helperText={formErrors.email}
             required
+            sx={commonFieldStyles}
           />
           <TextField
             fullWidth
@@ -167,6 +193,7 @@ const Signup = () => {
             error={!!formErrors.password}
             helperText={formErrors.password}
             required
+            sx={commonFieldStyles}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
