@@ -40,17 +40,14 @@ const FavoriteBlogs = () => {
           <Grid container spacing={3}>
             {favBlogs.slice(0, visibleCount).map((blog) => (
               <Grid
-                item
                 key={blog.id}
-                xs={12}
-                sm={view === "grid" ? 6 : 12}
-                md={view === "grid" ? 4 : 12}
+                size={{
+                  xs: 12,
+                  sm: view === "grid" ? 6 : 12,
+                  md: view === "grid" ? 4 : 12,
+                }}
               >
-                <BlogCard
-                  blog={blog}
-                  viewMode={view}
-                  showEditButtons={false}
-                />
+                <BlogCard blog={blog} viewMode={view} showEditButtons={false} />
               </Grid>
             ))}
           </Grid>
