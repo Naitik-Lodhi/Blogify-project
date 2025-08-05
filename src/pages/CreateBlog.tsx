@@ -27,6 +27,7 @@ const CreateBlog = () => {
     authorId: user?.id ?? "",
     date: new Date().toISOString(),
     image: "",
+    isFavorite: false, // ✅ ADD THIS LINE
   };
 
   const [blog, setBlog] = useState<Blog>(initialState);
@@ -41,7 +42,11 @@ const CreateBlog = () => {
         navigate("/"); // Prevent editing others' blogs
       }
     } else {
-      setBlog({ ...initialState, id: crypto.randomUUID(), authorId: user?.id ?? "" });
+      setBlog({
+        ...initialState,
+        id: crypto.randomUUID(),
+        authorId: user?.id ?? "",
+      });
     }
     // eslint-disable-next-line
   }, [id, blogs, user]);
@@ -81,15 +86,22 @@ const CreateBlog = () => {
     } else {
       addBlog(blog);
     }
-    setBlog({ ...initialState, id: crypto.randomUUID(), authorId: user?.id ?? "" });
+    setBlog({
+      ...initialState,
+      id: crypto.randomUUID(),
+      authorId: user?.id ?? "",
+    });
     navigate("/");
   };
 
-  if (!user) return <Typography>Login required to create/edit blogs.</Typography>;
+  if (!user)
+    return <Typography>Login required to create/edit blogs.</Typography>;
 
   return (
     <Box maxWidth="600px" mx="auto" mt={4}>
-      <Typography variant="h5" mb={2}>{id ? "Edit Blog" : "Create Blog"}</Typography>
+      <Typography variant="h5" mb={2}>
+        {id ? "Edit Blog" : "Create Blog"}
+      </Typography>
       <TextField
         label="Title"
         fullWidth
@@ -119,7 +131,11 @@ const CreateBlog = () => {
         <MenuItem value="Education">Education</MenuItem>
       </Select>
       <Input type="file" onChange={handleImageUpload} sx={{ my: 2 }} />
-      {error && <Typography color="error" mb={2}>{error}</Typography>}
+      {error && (
+        <Typography color="error" mb={2}>
+          {error}
+        </Typography>
+      )}
       <Button variant="contained" onClick={handleSubmit}>
         {id ? "Update Blog" : "Publish Blog"}
       </Button>
