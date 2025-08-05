@@ -37,6 +37,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  if (!context) {
+    if (import.meta.env.DEV) {
+      throw new Error("useAuth must be used within AuthProvider");
+    } else {
+      console.error("useAuth called outside AuthProvider");
+      return { user: null, login: () => {}, logout: () => {} };
+    }
+  }
+
   return context;
 };
