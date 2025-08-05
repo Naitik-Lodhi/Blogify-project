@@ -5,7 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 // Importing BrowserRouter from react-router-dom to enable client-side routing
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, HashRouter } from "react-router-dom";
 
 // Importing the main App component that contains the core UI and routing logic
 import App from "./App";
@@ -41,7 +41,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                     {/* App is the root component that defines the UI and routing */}
                     <BlogFilterProvider>
                       <FavoriteProvider>
-                        <App />
+                        <HashRouter>
+                          <App />
+                        </HashRouter>
                       </FavoriteProvider>
                     </BlogFilterProvider>
                   </SearchProvider>
