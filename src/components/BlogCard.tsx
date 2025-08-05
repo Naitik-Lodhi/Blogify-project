@@ -40,10 +40,16 @@ const BlogCard = ({
   const { user } = useAuth();
   const isAuthor = user?.id === blog.authorId;
   const [authorName, setAuthorName] = useState<string>("");
-  const [imageSrc, setImageSrc] = useState<string>(blog.image || DEFAULT_IMAGE);
+  // const [imageSrc, setImageSrc] = useState<string>(blog.image || DEFAULT_IMAGE);
   const { showMessage } = useFeedback();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { toggleFavorite, deleteBlog } = useBlogContext();
+
+  const [imageSrc, setImageSrc] = useState<string>("");
+
+  useEffect(() => {
+    setImageSrc(blog.image || DEFAULT_IMAGE);
+  }, [blog.image]);
 
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
@@ -120,16 +126,20 @@ const BlogCard = ({
                 {blog.title}
               </Typography>
               {user && (
-                <Tooltip title={blog.isFavorite ? "Remove Favorite" : "Add to Favorites"}>
-                <IconButton
-                  onClick={handleFavoriteToggle}
-                  color="error"
-                  size="small"
+                <Tooltip
+                  title={
+                    blog.isFavorite ? "Remove Favorite" : "Add to Favorites"
+                  }
                 >
-                  {blog.isFavorite ? <Favorite /> : <FavoriteBorder />}
-                </IconButton>
-              </Tooltip>
-            )}
+                  <IconButton
+                    onClick={handleFavoriteToggle}
+                    color="error"
+                    size="small"
+                  >
+                    {blog.isFavorite ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
