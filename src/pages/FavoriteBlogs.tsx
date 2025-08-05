@@ -24,7 +24,8 @@ const FavoriteBlogs = () => {
     );
   }
 
-  const favBlogs = blogs.filter((b) => b.isFavorite && b.authorId !== user?.id);
+  const favBlogs = blogs.filter((b) => b.isFavorite);
+
 
   const hasMore = visibleCount < favBlogs.length;
 
