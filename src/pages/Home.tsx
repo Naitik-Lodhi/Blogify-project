@@ -47,8 +47,8 @@ const Home = () => {
   const filteredBlogs = blogs
     .filter((b) => {
       if (filter === "your") return b.authorId === user?.id;
-      if (filter === "favorites")
-        return b.isFavorite && b.authorId !== user?.id;
+      if (filter === "favorites") return b.isFavorite; // ✅ Allow own blogs
+
       return true;
     })
     .filter((b) => {
