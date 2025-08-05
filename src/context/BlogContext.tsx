@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import type { Blog } from "../types/blog";
-import dummyBlogs from "../data/dummyBlogs.json"; 
+import dummyBlogs from "../data/dummyBlogs.json";
 
 interface BlogContextType {
   blogs: Blog[];
@@ -20,7 +20,8 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
   const refreshBlogs = () => {
     const stored = JSON.parse(localStorage.getItem("blogs") || "[]");
 
-    const hasUserAddedBlogs = localStorage.getItem("hasUserAddedBlogs") === "true";
+    const hasUserAddedBlogs =
+      localStorage.getItem("hasUserAddedBlogs") === "true";
 
     if (!hasUserAddedBlogs && stored.length === 0) {
       localStorage.setItem("blogs", JSON.stringify(dummyBlogs));
@@ -36,14 +37,21 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
   // ✅ Step 3: Mark user has added real blog
   const addBlog = (blog: Blog) => {
-    const updated = [blog, ...blogs];
+    const newBlog = {
+      ...blog,
+      isFavorite: blog.isFavorite ?? false, // ✅ Ensure default false
+    };
+    const updated = [newBlog, ...blogs];
     setBlogs(updated);
     localStorage.setItem("blogs", JSON.stringify(updated));
-    localStorage.setItem("hasUserAddedBlogs", "true");
   };
 
   const updateBlog = (blog: Blog) => {
-    const updated = blogs.map((b) => (b.id === blog.id ? blog : b));
+    const updatedBlog = {
+      ...blog,
+      isFavorite: blog.isFavorite ?? false, // ✅ Ensure field is not missing
+    };
+    const updated = blogs.map((b) => (b.id === blog.id ? updatedBlog : b));
     setBlogs(updated);
     localStorage.setItem("blogs", JSON.stringify(updated));
   };
@@ -64,7 +72,14 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <BlogContext.Provider
-      value={{ blogs, refreshBlogs, addBlog, updateBlog, deleteBlog, toggleFavorite }}
+      value={{
+        blogs,
+        refreshBlogs,
+        addBlog,
+        updateBlog,
+        deleteBlog,
+        toggleFavorite,
+      }}
     >
       {children}
     </BlogContext.Provider>
@@ -73,6 +88,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
 
 export const useBlogContext = () => {
   const context = useContext(BlogContext);
-  if (!context) throw new Error("useBlogContext must be used within BlogProvider");
+  if (!context)
+    throw new Error("useBlogContext must be used within BlogProvider");
   return context;
 };
