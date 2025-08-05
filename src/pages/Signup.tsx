@@ -229,15 +229,27 @@ const Signup = () => {
             </Typography>
           )}
 
-          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3 }}>
+          <Button
+            fullWidth
+            variant="contained"
+            type="submit"
+            sx={{ mt: 3, color: "#2575fc" }}
+          >
             Create Account
           </Button>
 
-          <Button fullWidth onClick={() => navigate("/login")} sx={{ mt: 2 }}>
+          <Button
+            fullWidth
+            onClick={() => navigate("/login")}
+            sx={{ mt: 2, color: "#2575fc" }}
+          >
             Already have an account? Log in
           </Button>
 
-          <Button onClick={() => navigate("/")} sx={{ mt: 1 }}>
+          <Button
+            onClick={() => navigate("/")}
+            sx={{ mt: 1, color: "#2575fc" }}
+          >
             ← Back to Home
           </Button>
         </form>
