@@ -64,6 +64,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
     );
     setBlogs(updated);
     localStorage.setItem("blogs", JSON.stringify(updated));
+    console.log(updated);
   };
 
   return (
