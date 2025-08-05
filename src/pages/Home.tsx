@@ -11,6 +11,7 @@ import { useBlogFilter } from "../context/BlogFilterContext";
 import { useCreateBlog } from "../context/CreateBlogContext";
 import { useFeedback } from "../context/FeedbackContext";
 import { useBlogContext } from "../context/BlogContext";
+import { useFavorites } from "../context/FavoriteContext";
 
 const BLOGS_PER_PAGE = 6;
 
@@ -24,6 +25,7 @@ const Home = () => {
   const { openModal, setOpenModal, editingBlog, setEditingBlog } =
     useCreateBlog();
   const { blogs, addBlog, updateBlog, refreshBlogs } = useBlogContext();
+  const { favoriteIds } = useFavorites();
 
   useEffect(() => {
     refreshBlogs();
@@ -47,7 +49,8 @@ const Home = () => {
   const filteredBlogs = blogs
     .filter((b) => {
       if (filter === "your") return b.authorId === user?.id;
-      if (filter === "favorites") return b.isFavorite; // ✅ Allow own blogs
+      if (filter === "favorites") return favoriteIds.includes(b.id);
+      // ✅ Allow own blogs
 
       return true;
     })

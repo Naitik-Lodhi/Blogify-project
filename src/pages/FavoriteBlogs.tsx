@@ -4,6 +4,7 @@ import { useViewContext } from "../context/ViewModeContext";
 import { useBlogContext } from "../context/BlogContext";
 import BlogCard from "../components/BlogCard";
 import { useAuth } from "../context/AuthContext";
+import { useFavorites } from "../context/FavoriteContext";
 
 const BLOGS_PER_PAGE = 6;
 
@@ -12,6 +13,7 @@ const FavoriteBlogs = () => {
   const [visibleCount, setVisibleCount] = useState(BLOGS_PER_PAGE);
   const { blogs } = useBlogContext();
   const { user } = useAuth();
+  const { favoriteIds } = useFavorites();
 
   // ✅ Block access if not logged in
   if (!user) {
@@ -24,7 +26,7 @@ const FavoriteBlogs = () => {
     );
   }
 
-  const favBlogs = blogs.filter((b) => b.isFavorite); // ✅ Remove user check
+  const favBlogs = blogs.filter((b) => favoriteIds.includes(b.id)); // ✅ Remove user check
 
   const hasMore = visibleCount < favBlogs.length;
 

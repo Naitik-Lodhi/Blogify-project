@@ -7,7 +7,7 @@ interface BlogContextType {
   addBlog: (blog: Blog) => void;
   updateBlog: (blog: Blog) => void;
   deleteBlog: (id: string) => void;
-  toggleFavorite: (id: string) => void;
+  //toggleFavorite: (id: string) => void;
 }
 
 const BlogContext = createContext<BlogContextType | undefined>(undefined);
@@ -58,14 +58,14 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("blogs", JSON.stringify(updated));
   };
 
-  const toggleFavorite = (id: string) => {
-    const updated = blogs.map((b) =>
-      b.id === id ? { ...b, isFavorite: !b.isFavorite } : b
-    );
-    setBlogs(updated);
-    localStorage.setItem("blogs", JSON.stringify(updated));
-    console.log(updated);
-  };
+  // const toggleFavorite = (id: string) => {
+  //   const updated = blogs.map((b) =>
+  //     b.id === id ? { ...b, isFavorite: !b.isFavorite } : b
+  //   );
+  //   setBlogs(updated);
+  //   localStorage.setItem("blogs", JSON.stringify(updated));
+  //   console.log(updated);
+  // };
 
   return (
     <BlogContext.Provider
@@ -75,7 +75,7 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
         addBlog,
         updateBlog,
         deleteBlog,
-        toggleFavorite,
+        // toggleFavorite,
       }}
     >
       {children}

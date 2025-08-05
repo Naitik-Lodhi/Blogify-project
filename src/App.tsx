@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import RootLayout from "./layout/RootLayout";
 import LoadingSpinner from "./components/LoadingSpinner";
+import { ProtectedRoute } from "./layout/ProtectedRoute";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
@@ -17,8 +18,8 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
-        <Route element={<RootLayout />}>
-          <Route path="/" element={<Home />} />
+        <Route path="/" element={<RootLayout />}>
+          <Route index element={<Home />} />
           <Route path="/create" element={<CreateBlog />} />
           <Route path="/edit/:id" element={<CreateBlog />} />
           <Route path="/blog/:id" element={<BlogDetail />} />

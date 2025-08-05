@@ -18,6 +18,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import type { Blog } from "../types/blog";
 import { useFeedback } from "../context/FeedbackContext";
+import { useFavorites } from "../context/FavoriteContext";
 import { useBlogContext } from "../context/BlogContext";
 
 const DEFAULT_IMAGE =
@@ -43,7 +44,8 @@ const BlogCard = ({
   // const [imageSrc, setImageSrc] = useState<string>(blog.image || DEFAULT_IMAGE);
   const { showMessage } = useFeedback();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { toggleFavorite, deleteBlog } = useBlogContext();
+  const { deleteBlog } = useBlogContext();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const [imageSrc, setImageSrc] = useState<string>("");
 
@@ -59,7 +61,7 @@ const BlogCard = ({
 
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
-    toggleFavorite(blog.id);
+    toggleFavorite(blog.id); // now from FavoriteContext
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -128,7 +130,7 @@ const BlogCard = ({
               {user && (
                 <Tooltip
                   title={
-                    blog.isFavorite ? "Remove Favorite" : "Add to Favorites"
+                    isFavorite(blog.id) ? "Remove Favorite" : "Add to Favorites"
                   }
                 >
                   <IconButton
@@ -136,7 +138,7 @@ const BlogCard = ({
                     color="error"
                     size="small"
                   >
-                    {blog.isFavorite ? <Favorite /> : <FavoriteBorder />}
+                    {isFavorite(blog.id) ? <Favorite /> : <FavoriteBorder />}
                   </IconButton>
                 </Tooltip>
               )}
