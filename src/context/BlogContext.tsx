@@ -20,10 +20,12 @@ export const BlogProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const stored = localStorage.getItem("blogs");
     if (stored) {
-      const parsed: Blog[] = JSON.parse(stored).map((b) => ({
-        ...b,
-        isFavorite: b.isFavorite ?? false, // ensure field exists
-      }));
+      const parsed: Blog[] = JSON.parse(stored).map(
+        (b: { isFavorite: any }) => ({
+          ...b,
+          isFavorite: b.isFavorite ?? false, // ensure field exists
+        })
+      );
       setBlogs(parsed);
     } else {
       const initialBlogs = dummyData.map((b) => ({

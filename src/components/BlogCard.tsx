@@ -43,7 +43,7 @@ const BlogCard = ({
   const [imageSrc, setImageSrc] = useState<string>(blog.image || DEFAULT_IMAGE);
   const { showMessage } = useFeedback();
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const { toggleFavorite, deleteBlog } = useBlogContext();
+  const { toggleFavorite } = useBlogContext();
 
   useEffect(() => {
     const users = JSON.parse(localStorage.getItem("users") || "[]");
@@ -58,11 +58,9 @@ const BlogCard = ({
 
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
-    deleteBlog(blog.id);
   };
 
   const handleConfirmDelete = () => {
-    deleteBlog(blog.id);
     setConfirmOpen(false);
     showMessage("Blog deleted", "success");
   };
@@ -120,16 +118,20 @@ const BlogCard = ({
                 {blog.title}
               </Typography>
               {user && (
-                <Tooltip title={blog.isFavorite ? "Remove Favorite" : "Add to Favorites"}>
-                <IconButton
-                  onClick={handleFavoriteToggle}
-                  color="error"
-                  size="small"
+                <Tooltip
+                  title={
+                    blog.isFavorite ? "Remove Favorite" : "Add to Favorites"
+                  }
                 >
-                  {blog.isFavorite ? <Favorite /> : <FavoriteBorder />}
-                </IconButton>
-              </Tooltip>
-            )}
+                  <IconButton
+                    onClick={handleFavoriteToggle}
+                    color="error"
+                    size="small"
+                  >
+                    {blog.isFavorite ? <Favorite /> : <FavoriteBorder />}
+                  </IconButton>
+                </Tooltip>
+              )}
             </Box>
 
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
