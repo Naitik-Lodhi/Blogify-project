@@ -7,7 +7,6 @@ import {
   Paper,
   InputAdornment,
   IconButton,
-  LinearProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -19,31 +18,11 @@ const Login = () => {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const [formErrors, setFormErrors] = useState({ email: "", password: "" });
+  const [formErrors, setFormErrors] = useState({ email: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState<"Weak" | "Medium" | "Strong">("Weak");
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const getPasswordStrength = (password: string): "Weak" | "Medium" | "Strong" => {
-    const lengthCheck = password.length >= 6;
-    const uppercaseCheck = /[A-Z]/.test(password);
-    const numberCheck = /[0-9]/.test(password);
-    const specialCharCheck = /[!@#$%^&*]/.test(password);
-    const score = [lengthCheck, uppercaseCheck, numberCheck, specialCharCheck].filter(Boolean).length;
-    if (score <= 1) return "Weak";
-    if (score === 2 || score === 3) return "Medium";
-    return "Strong";
-  };
-
-  const validatePassword = (password: string) => {
-    const lengthCheck = password.length >= 6;
-    const uppercaseCheck = /[A-Z]/.test(password);
-    const numberCheck = /[0-9]/.test(password);
-    const specialCharCheck = /[!@#$%^&*]/.test(password);
-    return lengthCheck && uppercaseCheck && numberCheck && specialCharCheck;
-  };
 
   const handleInputChange = (field: "email" | "password", value: string) => {
     setForm({ ...form, [field]: value });
@@ -54,23 +33,15 @@ const Login = () => {
         email: validateEmail(value) ? "" : "Invalid email format",
       }));
     }
-
-    if (field === "password") {
-      setFormErrors((prev) => ({
-        ...prev,
-        password: validatePassword(value)
-          ? ""
-          : "Password must be at least 6 chars, include uppercase, number, special char.",
-      }));
-      setPasswordStrength(getPasswordStrength(value));
-    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (formErrors.email || formErrors.password) return;
 
-    const user = JSON.parse(localStorage.getItem("users") || "[]").find(
+    if (formErrors.email) return;
+
+    const users = JSON.parse(localStorage.getItem("users") || "[]");
+    const user = users.find(
       (u: any) => u.email === form.email && u.password === form.password
     );
 
@@ -102,28 +73,6 @@ const Login = () => {
       color: "#000",
       py: 1,
     },
-  };
-
-  const getStrengthColor = () => {
-    switch (passwordStrength) {
-      case "Weak":
-        return "error";
-      case "Medium":
-        return "warning";
-      case "Strong":
-        return "success";
-    }
-  };
-
-  const getStrengthValue = () => {
-    switch (passwordStrength) {
-      case "Weak":
-        return 30;
-      case "Medium":
-        return 60;
-      case "Strong":
-        return 100;
-    }
   };
 
   return (
@@ -170,8 +119,6 @@ const Login = () => {
             type={showPassword ? "text" : "password"}
             value={form.password}
             onChange={(e) => handleInputChange("password", e.target.value)}
-            error={!!formErrors.password}
-            helperText={formErrors.password}
             required
             sx={commonFieldStyles}
             InputProps={{
@@ -185,35 +132,21 @@ const Login = () => {
             }}
           />
 
-          {form.password && (
-            <>
-              <Typography variant="caption" sx={{ display: "block", textAlign: "left", mt: 1 }} color={getStrengthColor()}>
-                Strength: {passwordStrength}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={getStrengthValue()}
-                color={getStrengthColor()}
-                sx={{ height: 8, borderRadius: 2, mt: 0.5, mb: 2 }}
-              />
-            </>
-          )}
-
           {error && (
             <Typography color="error" sx={{ mt: 1, mb: 1 }}>
               {error}
             </Typography>
           )}
 
-          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3,backgroundcolor: "#2575fc"   }}>
+          <Button fullWidth variant="contained" type="submit" sx={{ mt: 3, backgroundColor: "#2575fc" }}>
             Login
           </Button>
 
-          <Button fullWidth onClick={() => navigate("/signup")} sx={{ mt: 2,color: "#2575fc"  }}>
+          <Button fullWidth onClick={() => navigate("/signup")} sx={{ mt: 2, color: "#2575fc" }}>
             New here? Sign up
           </Button>
 
-          <Button onClick={() => navigate("/")} sx={{ mt: 1,color: "#2575fc"  }}>
+          <Button onClick={() => navigate("/")} sx={{ mt: 1, color: "#2575fc" }}>
             ← Back to Home
           </Button>
         </form>

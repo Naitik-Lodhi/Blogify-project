@@ -24,9 +24,9 @@ import { FavoriteProvider } from "./context/FavoriteContext";
 // Create a root rendering context and render the React component tree into the HTML element with id="root"
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <FeedbackProvider>
-      <BlogProvider>
-        <AuthProvider>
+    <AuthProvider>
+      <FeedbackProvider>
+        <BlogProvider>
           <CreateBlogProvider>
             <ThemeContextProvider>
               <ViewModeProvider>
@@ -42,8 +42,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
               </ViewModeProvider>
             </ThemeContextProvider>
           </CreateBlogProvider>
-        </AuthProvider>
-      </BlogProvider>
-    </FeedbackProvider>
+        </BlogProvider>
+      </FeedbackProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

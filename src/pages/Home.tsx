@@ -26,12 +26,19 @@ const Home = () => {
     useCreateBlog();
   const { blogs, addBlog, updateBlog, refreshBlogs } = useBlogContext();
   const { favoriteIds } = useFavorites();
+  const { setFilter } = useBlogFilter();
 
   useEffect(() => {
     refreshBlogs();
     setVisibleCount(BLOGS_PER_PAGE);
     // eslint-disable-next-line
   }, [query, filter]);
+
+  useEffect(() => {
+    if (!user && (filter === "your" || filter === "favorites")) {
+      setFilter("all");
+    }
+  }, [user]);
 
   const handleSave = (blog: Blog) => {
     if (editingBlog) {

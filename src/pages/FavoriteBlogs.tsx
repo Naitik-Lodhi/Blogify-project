@@ -5,6 +5,8 @@ import { useBlogContext } from "../context/BlogContext";
 import BlogCard from "../components/BlogCard";
 import { useAuth } from "../context/AuthContext";
 import { useFavorites } from "../context/FavoriteContext";
+import { Navigate } from "react-router-dom";
+// import { Navigate, useNavigate } from "react-router-dom";
 
 const BLOGS_PER_PAGE = 6;
 
@@ -15,16 +17,17 @@ const FavoriteBlogs = () => {
   const { user } = useAuth();
   const { favoriteIds } = useFavorites();
 
-  // ✅ Block access if not logged in
-  if (!user) {
-    return (
-      <Box sx={{ maxWidth: 800, mx: "auto", mt: 5, textAlign: "center" }}>
-        <Typography variant="h6" color="text.secondary">
-          Please log in to view your favorite blogs.
-        </Typography>
-      </Box>
-    );
-  }
+  if (!user) return <Navigate to="/" replace />;
+  // // ✅ Block access if not logged in
+  // if (!user) {
+  //   return (
+  //     <Box sx={{ maxWidth: 800, mx: "auto", mt: 5, textAlign: "center" }}>
+  //       <Typography variant="h6" color="text.secondary">
+  //         Please log in to view your favorite blogs.
+  //       </Typography>
+  //     </Box>
+  //   );
+  // }
 
   const favBlogs = blogs.filter((b) => favoriteIds.includes(b.id)); // ✅ Remove user check
 

@@ -63,6 +63,7 @@ const Navbar = () => {
     logout();
     setDrawerOpen(false);
     handlePopoverClose();
+    setFilter("all");
     navigate("/");
   };
 

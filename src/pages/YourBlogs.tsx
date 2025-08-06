@@ -9,6 +9,7 @@ import { useCreateBlog } from "../context/CreateBlogContext";
 import BlogModal from "../components/BlogModal";
 import { useFeedback } from "../context/FeedbackContext";
 import type { Blog } from "../types/blog";
+import { Navigate } from "react-router-dom";
 
 const BLOGS_PER_PAGE = 6;
 
@@ -21,6 +22,9 @@ const YourBlogs = () => {
   const { addBlog, updateBlog } = useBlogContext();
   const { showMessage } = useFeedback();
   const { blogs } = useBlogContext();
+
+  if (!user) return <Navigate to="/" replace />;
+
   const myBlogs = blogs.filter((b) => b.authorId === user?.id);
   const hasMore = visibleCount < myBlogs.length;
 

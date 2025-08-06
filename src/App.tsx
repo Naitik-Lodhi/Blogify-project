@@ -2,7 +2,7 @@ import { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
 import RootLayout from "./layout/RootLayout";
 import LoadingSpinner from "./components/LoadingSpinner";
-import { ProtectedRoute } from "./layout/ProtectedRoute";
+// import { ProtectedRoute } from "./layout/ProtectedRoute";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
