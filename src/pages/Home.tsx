@@ -24,6 +24,7 @@ import { useCreateBlog } from "../context/CreateBlogContext";
 import { useFeedback } from "../context/FeedbackContext";
 import { useBlogContext } from "../context/BlogContext";
 import { useFavorites } from "../context/FavoriteContext";
+import { logout } from "../services/authService";
 
 const BLOGS_PER_PAGE = 6;
 
@@ -161,19 +162,24 @@ const Home = () => {
         <DialogTitle sx={{ fontWeight: "bold", fontSize: 20 }}>
           📝 Welcome to <span style={{ color: "#2575fc" }}>Blogify</span>!
         </DialogTitle>
+
         <DialogContent>
           <DialogContentText sx={{ fontSize: 15, lineHeight: 1.6 }}>
-            This website uses your browser's{" "}
-            <strong>localStorage</strong> as the database.
+            This website uses your browser's <strong>localStorage</strong> as
+            the database.
             <br />
             <br />
-            You can test the features by creating multiple user accounts —
-            <strong> Signup</strong> and <strong>Login</strong> are fully
+            You can test features by creating multiple user accounts —{" "}
+            <strong>Signup</strong> and <strong>Login</strong> are fully
             functional.
             <br />
             <br />
             The blogs you currently see are <strong>dummy data</strong> from a
             JSON file.
+            <br />
+            <br />
+            <strong>If you're a returning user</strong> and want to reset the
+            website like new — you can clear all local data with one click.
           </DialogContentText>
 
           <FormControlLabel
@@ -186,7 +192,37 @@ const Home = () => {
             label="Don't show this again"
             sx={{ mt: 2 }}
           />
+
+          <MuiButton
+            variant="outlined"
+            color="error"
+            fullWidth
+            sx={{ mt: 2 }}
+            onClick={() => {
+              // Clear data
+              localStorage.removeItem("users");
+              localStorage.removeItem("blogs");
+              localStorage.removeItem("favorites");
+              localStorage.removeItem("loggedInUser");
+              localStorage.removeItem("hideIntroPopup");
+
+              // Reset contexts
+
+              logout(); // AuthContext
+              setFilter("all");
+              refreshBlogs(); // BlogContext
+
+              // Close popup
+              setShowIntro(false);
+
+              // ✅ Show snackbar
+              showMessage("Local data cleared. Reloaded as guest.", "success");
+            }}
+          >
+            Clear Local Data & Reset Site
+          </MuiButton>
         </DialogContent>
+
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <MuiButton
             variant="contained"
