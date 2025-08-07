@@ -62,8 +62,11 @@ const Home = () => {
 
   useEffect(() => {
     const alreadyHidden = localStorage.getItem("hideIntroPopup");
-    if (!alreadyHidden) {
+    const alreadyShownThisSession = sessionStorage.getItem("introShown");
+
+    if (!alreadyHidden && !alreadyShownThisSession) {
       setShowIntro(true);
+      sessionStorage.setItem("introShown", "true"); // 👈 don’t show again until full reload
     }
   }, []);
 
@@ -100,7 +103,12 @@ const Home = () => {
 
   return (
     <Box sx={{ width: "100%", maxWidth: 1200, mx: "auto", px: 2, mt: 3 }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h5">Recently Added Blogs</Typography>
       </Box>
 
@@ -168,14 +176,16 @@ const Home = () => {
             <br />
             <br />
             You can test features by creating multiple user accounts —
-            <strong>Signup</strong> and <strong>Login</strong> are fully functional.
+            <strong>Signup</strong> and <strong>Login</strong> are fully
+            functional.
             <br />
             <br />
-            The blogs you currently see are <strong>dummy data</strong> from a JSON file.
+            The blogs you currently see are <strong>dummy data</strong> from a
+            JSON file.
             <br />
             <br />
-            <strong>If you're a returning user</strong> and want to reset the website like new —
-            you can clear all local data with one click.
+            <strong>If you're a returning user</strong> and want to reset the
+            website like new — you can clear all local data with one click.
           </DialogContentText>
 
           <FormControlLabel
