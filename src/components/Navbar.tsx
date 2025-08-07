@@ -64,7 +64,7 @@ const Navbar = () => {
     setDrawerOpen(false);
     handlePopoverClose();
     setFilter("all");
-    navigate("/");
+    navigate("/login");
   };
 
   const openCreateBlogModal = () => {
