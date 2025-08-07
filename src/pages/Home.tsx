@@ -12,7 +12,9 @@ import {
   DialogActions,
   Checkbox,
   FormControlLabel,
+  CircularProgress,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import BlogCard from "../components/BlogCard";
 import { useAuth } from "../context/AuthContext";
 import { useViewContext } from "../context/ViewModeContext";
@@ -40,9 +42,11 @@ const Home = () => {
   const { blogs, addBlog, updateBlog, refreshBlogs } = useBlogContext();
   const { favoriteIds } = useFavorites();
 
-  // Intro Popup state
   const [showIntro, setShowIntro] = useState(false);
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const [resetTimer, setResetTimer] = useState<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     refreshBlogs();
@@ -56,7 +60,6 @@ const Home = () => {
     }
   }, [user]);
 
-  // Show welcome popup if first time
   useEffect(() => {
     const alreadyHidden = localStorage.getItem("hideIntroPopup");
     if (!alreadyHidden) {
@@ -97,12 +100,7 @@ const Home = () => {
 
   return (
     <Box sx={{ width: "100%", maxWidth: 1200, mx: "auto", px: 2, mt: 3 }}>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5">Recently Added Blogs</Typography>
       </Box>
 
@@ -169,17 +167,15 @@ const Home = () => {
             the database.
             <br />
             <br />
-            You can test features by creating multiple user accounts —{" "}
-            <strong>Signup</strong> and <strong>Login</strong> are fully
-            functional.
+            You can test features by creating multiple user accounts —
+            <strong>Signup</strong> and <strong>Login</strong> are fully functional.
             <br />
             <br />
-            The blogs you currently see are <strong>dummy data</strong> from a
-            JSON file.
+            The blogs you currently see are <strong>dummy data</strong> from a JSON file.
             <br />
             <br />
-            <strong>If you're a returning user</strong> and want to reset the
-            website like new — you can clear all local data with one click.
+            <strong>If you're a returning user</strong> and want to reset the website like new —
+            you can clear all local data with one click.
           </DialogContentText>
 
           <FormControlLabel
@@ -199,24 +195,31 @@ const Home = () => {
             fullWidth
             sx={{ mt: 2 }}
             onClick={() => {
-              // Clear data
               localStorage.removeItem("users");
               localStorage.removeItem("blogs");
               localStorage.removeItem("favorites");
               localStorage.removeItem("loggedInUser");
               localStorage.removeItem("hideIntroPopup");
 
-              // Reset contexts
-
-              logout(); // AuthContext
+              logout();
               setFilter("all");
-              refreshBlogs(); // BlogContext
-
-              // Close popup
+              refreshBlogs();
               setShowIntro(false);
+              setResetDialogOpen(true);
 
-              // ✅ Show snackbar
-              showMessage("Local data cleared. Reloaded as guest.", "success");
+              let timeLeft = 3;
+              setCountdown(timeLeft);
+
+              const timer = setInterval(() => {
+                timeLeft--;
+                setCountdown(timeLeft);
+                if (timeLeft === 0) {
+                  clearInterval(timer);
+                  location.reload();
+                }
+              }, 1000);
+
+              setResetTimer(timer);
             }}
           >
             Clear Local Data & Reset Site
@@ -236,6 +239,48 @@ const Home = () => {
             Got it!
           </MuiButton>
         </DialogActions>
+      </Dialog>
+
+      {/* 🔄 Resetting Dialog */}
+      <Dialog open={resetDialogOpen}>
+        <DialogTitle sx={{ fontWeight: "bold", fontSize: 20 }}>
+          🔄 Resetting Blogify...
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
+            mt: 1,
+            minWidth: 300,
+          }}
+        >
+          <CircularProgress size={48} thickness={4} color="primary" />
+          <motion.div
+            key={countdown}
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1.2, opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            style={{ fontSize: "2.2rem", fontWeight: "bold" }}
+          >
+            {countdown}
+          </motion.div>
+          <Typography variant="body2" align="center" color="text.secondary">
+            Site will refresh in <strong>{countdown}</strong> seconds...
+          </Typography>
+          <MuiButton
+            variant="outlined"
+            color="error"
+            onClick={() => {
+              if (resetTimer) clearInterval(resetTimer);
+              setResetDialogOpen(false);
+              showMessage("Reset canceled", "info");
+            }}
+          >
+            Cancel Reset
+          </MuiButton>
+        </DialogContent>
       </Dialog>
     </Box>
   );
