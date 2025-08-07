@@ -91,23 +91,28 @@ const Signup = () => {
   };
 
   const commonFieldStyles = {
-    "& .MuiInputLabel-root": { color: "#2575fc" },
+    "& .MuiInputLabel-root": { color: "#01225aff" },
     "& .MuiOutlinedInput-root": {
       borderRadius: 2,
       color: "#000",
       "& fieldset": {
-        borderColor: "#2575fc",
+        borderColor: "#004dd1ff",
       },
       "&:hover fieldset": {
-        borderColor: "#6a11cb",
+        borderColor: "#320464ff",
       },
       "&.Mui-focused fieldset": {
-        borderColor: "#6a11cb",
+        borderColor: "#cec7d6ff",
+      },
+      // Autofill fix
+      "& input:-webkit-autofill": {
+        boxShadow: "0 0 0 1000px rgba(255,255,255,0.95) inset",
+        WebkitTextFillColor: "#000",
+        transition: "background-color 5000s ease-in-out 0s",
       },
     },
     input: {
       color: "#000",
-      py: 1,
     },
   };
 
@@ -137,11 +142,16 @@ const Signup = () => {
     <Box
       sx={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #6a11cb 0%, #2575fc 100%)",
+        background: "linear-gradient(135deg, #480f85ff 0%, #154dacff 100%)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         p: 2,
+        animation: "fadeIn 1s ease-in-out", // 👈 Animation
+        "@keyframes fadeIn": {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
       }}
     >
       <Paper

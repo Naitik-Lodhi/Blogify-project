@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import {
   ThemeProvider,
   createTheme,
@@ -14,9 +14,26 @@ const ThemeContext = createContext({
 
 export const useThemeContext = () => useContext(ThemeContext);
 
-export const ThemeContextProvider = ({ children }: { children: React.ReactNode }) => {
+export const ThemeContextProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const prefersDark = useMediaQuery("(prefers-color-scheme: dark)");
-  const [mode, setMode] = useState<PaletteMode>(prefersDark ? "dark" : "light");
+
+  // ✅ Check localStorage first, fallback to system preference
+  const getInitialMode = (): PaletteMode => {
+    const stored = localStorage.getItem("themeMode");
+    if (stored === "light" || stored === "dark") return stored;
+    return prefersDark ? "dark" : "light";
+  };
+
+  const [mode, setMode] = useState<PaletteMode>(getInitialMode);
+
+  // ✅ Save to localStorage on theme change
+  useEffect(() => {
+    localStorage.setItem("themeMode", mode);
+  }, [mode]);
 
   const toggleColorMode = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));

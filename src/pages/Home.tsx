@@ -1,6 +1,18 @@
 // Home.tsx
 import { useEffect, useState } from "react";
-import { Box, Typography, Grid, Button as MuiButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Grid,
+  Button as MuiButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 import BlogCard from "../components/BlogCard";
 import { useAuth } from "../context/AuthContext";
 import { useViewContext } from "../context/ViewModeContext";
@@ -19,14 +31,17 @@ const Home = () => {
   const { query } = useSearchContext();
   const { view } = useViewContext();
   const { user } = useAuth();
-  const { filter } = useBlogFilter();
+  const { filter, setFilter } = useBlogFilter();
   const { showMessage } = useFeedback();
   const [visibleCount, setVisibleCount] = useState(BLOGS_PER_PAGE);
   const { openModal, setOpenModal, editingBlog, setEditingBlog } =
     useCreateBlog();
   const { blogs, addBlog, updateBlog, refreshBlogs } = useBlogContext();
   const { favoriteIds } = useFavorites();
-  const { setFilter } = useBlogFilter();
+
+  // Intro Popup state
+  const [showIntro, setShowIntro] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
 
   useEffect(() => {
     refreshBlogs();
@@ -39,6 +54,14 @@ const Home = () => {
       setFilter("all");
     }
   }, [user]);
+
+  // Show welcome popup if first time
+  useEffect(() => {
+    const alreadyHidden = localStorage.getItem("hideIntroPopup");
+    if (!alreadyHidden) {
+      setShowIntro(true);
+    }
+  }, []);
 
   const handleSave = (blog: Blog) => {
     if (editingBlog) {
@@ -57,8 +80,6 @@ const Home = () => {
     .filter((b) => {
       if (filter === "your") return b.authorId === user?.id;
       if (filter === "favorites") return favoriteIds.includes(b.id);
-      // ✅ Allow own blogs
-
       return true;
     })
     .filter((b) => {
@@ -101,7 +122,7 @@ const Home = () => {
                 <BlogCard
                   blog={blog}
                   viewMode={view}
-                  showEditButtons={filter === "your"} // 👈 This is the key
+                  showEditButtons={filter === "your"}
                   onEditClick={(b) => {
                     setEditingBlog(b);
                     setOpenModal(true);
@@ -134,6 +155,52 @@ const Home = () => {
           initialBlog={editingBlog}
         />
       )}
+
+      {/* 🎉 Welcome Popup */}
+      <Dialog open={showIntro} onClose={() => setShowIntro(false)}>
+        <DialogTitle sx={{ fontWeight: "bold", fontSize: 20 }}>
+          📝 Welcome to <span style={{ color: "#2575fc" }}>Blogify</span>!
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ fontSize: 15, lineHeight: 1.6 }}>
+            This website uses your browser's{" "}
+            <strong>localStorage</strong> as the database.
+            <br />
+            <br />
+            You can test the features by creating multiple user accounts —
+            <strong> Signup</strong> and <strong>Login</strong> are fully
+            functional.
+            <br />
+            <br />
+            The blogs you currently see are <strong>dummy data</strong> from a
+            JSON file.
+          </DialogContentText>
+
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={dontShowAgain}
+                onChange={(e) => setDontShowAgain(e.target.checked)}
+              />
+            }
+            label="Don't show this again"
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <MuiButton
+            variant="contained"
+            onClick={() => {
+              if (dontShowAgain) {
+                localStorage.setItem("hideIntroPopup", "true");
+              }
+              setShowIntro(false);
+            }}
+          >
+            Got it!
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
